@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize";
 
 
-export const sequelize = new Sequelize("practica",'osmait', '123456',{
-    host:'localhost',
+export const db = new Sequelize('practica','osmait','123456',{
+    host:process.env.HOST,
     dialect:'postgres'
 })
 
