@@ -1,6 +1,7 @@
 import express from "express";
 import { db } from "../database/db.js";
 import router from '../router/userRouter.js'
+import routerLogin from '../router/login.js'
 
 
 
@@ -35,6 +36,7 @@ class Server {
 
     routers(){
         this.app.use('/api',router)
+        this.app.use('/api',routerLogin)
     }
 
 

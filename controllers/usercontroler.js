@@ -1,36 +1,30 @@
 import { User } from "../models/User.js";
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
 
 export class UserController {
   async create(req, res) {
     const { firstName, lastName, password, email } = req.body;
 
-    const usuario = new User({firstName,lastName,password,email})
-    
-   // email validation 
+    const usuario = new User({ firstName, lastName, password, email });
 
-   const emailExist =await User.findOne({where:{ email}})
- 
+    // email validation
 
-  
-    if(emailExist){
-      return  res.status(400).json({
-        msg:'este email ya fue registrado'
-      })
-      
+    const emailExist = await User.findOne({ where: { email } });
+
+    if (emailExist) {
+      return res.status(400).json({
+        msg: "este email ya fue registrado",
+      });
     }
 
-
     // Encriptar password
-    const salt = bcrypt.genSaltSync()
-    usuario.password = bcrypt.hashSync(password,salt);
+    const salt = bcrypt.genSaltSync();
+    usuario.password = bcrypt.hashSync(password, salt);
 
-    await usuario.save()
-
+    await usuario.save();
 
     res.status(200).json({
       msg: "Resgistrado corectamente",
-     
     });
   }
 
@@ -49,18 +43,38 @@ export class UserController {
   }
 
   async Editar(req, res) {
-    const { id } = req.params;
-    const { firstName, lastName } = req.body;
-    const usuario = await User.findByPk(id);
+    try {
+      const { id } = req.params;
+      const { firstName, lastName, password,email} = req.body;
+      const usuario = await User.findByPk(id);
 
-    usuario.firstName = firstName;
-    usuario.lastName = lastName;
+      if (!usuario) {
+        return res.status(404).json({
+          msg: "Usuario no se han encontrado",
+          
+        });
+      }
+      const salt = bcrypt.genSaltSync();
+      usuario.password = bcrypt.hashSync(password, salt);
 
-    await usuario.save();
-    res.status(200).json({
-      msg: "Editado correctamente",
-      usuario,
-    });
+
+      usuario.firstName = firstName;
+      usuario.lastName = lastName;
+      usuario.email = email
+      
+
+      await usuario.save();
+      res.status(200).json({
+        msg: "Editado correctamente",
+        usuario:{
+          firstName,
+          lastName,
+          ema
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async Eliminar(req, res) {
@@ -80,7 +94,7 @@ export class UserController {
         },
       });
       res.status(200).json({
-        msg:"Se a eliminado Correctamente",
+        msg: "Se a eliminado Correctamente",
         id,
       });
     } catch (error) {
