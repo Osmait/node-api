@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { UserController } from "../controllers/usercontroler.js";
 
 const router = Router()
@@ -6,19 +7,13 @@ const users = new UserController()
 
 router.get('/user',users.listarTodos)
 
-router.get('/user',(req,res)=>{
-   return res.send("Hello word")
-})
+router.get('/user/:id',users.ListarUno)
 
 router.post('/user',users.create)
 
-router.put('/user',(req,res)=>{
-   return res.send("Hello word")
-})
+router.put('/user/:id',users.Editar)
 
-router.delete('/user',(req,res)=>{
-   return res.send("Hello word")
-})
+router.delete('/user/:id',users.Eliminar)
 
 
 

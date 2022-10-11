@@ -1,7 +1,7 @@
 import express from "express";
 import { db } from "../database/db.js";
 import router from '../router/userRouter.js'
-import cors from 'cors'
+
 
 
 
@@ -11,19 +11,27 @@ class Server {
     constructor(){
         this.app = express()
         this.port =process.env.PORT || 8000
-        this.routers()
-        
-        this.dbConnection()
         this.middlewares()
+        this.routers()
+        this.dbConnection()
+
+        
+        
     }
 
-    
+
+  
 
     listen(){
         this.app.listen(this.port,() => { 
             console.log(`Server on port ${this.port}`)
         })
     }
+
+    middlewares(){
+        this.app.use(express.json())
+    }
+
 
     routers(){
         this.app.use('/api',router)
@@ -40,11 +48,6 @@ class Server {
     }
 
 
-    middlewares(){
-        this.app.use( express.json() );
-
-        this.app.use(cors)
-    }
 }
 
 
