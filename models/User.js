@@ -7,7 +7,8 @@ export const User = db.define('User', {
     id:{
         type:DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        unique:true
     },
 
     firstName: {
@@ -15,10 +16,20 @@ export const User = db.define('User', {
       allowNull: false
     },
     lastName: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull:false
     
-    }
-  }, {
- 
+    },
+    password:{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true
+
+    },
+
   });
   
