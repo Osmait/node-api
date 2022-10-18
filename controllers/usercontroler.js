@@ -1,31 +1,43 @@
 import { User } from "../models/User.js";
 import bcrypt from "bcryptjs";
+import { userSchema } from "../models/validatorUser.js";
 
 export class UserController {
   async create(req, res) {
-    const { firstName, lastName, password, email } = req.body;
+    try {
+      const { firstName, lastName, password, email } = req.body;
+      await userSchema.validateAsync({ firstName, lastName, password, email });
 
-    const usuario = new User({ firstName, lastName, password, email });
+      const usuario = new User({ firstName, lastName, password, email });
 
-    // email validation
+      // email validation
 
-    const emailExist = await User.findOne({ where: { email } });
+      const emailExist = await User.findOne({ where: { email } });
 
-    if (emailExist) {
-      return res.status(400).json({
-        msg: "este email ya fue registrado",
+      if (emailExist) {
+        return res.status(400).json({
+          msg: "este email ya fue registrado",
+        });
+      }
+
+      // Encriptar password
+      const salt = bcrypt.genSaltSync();
+      usuario.password = bcrypt.hashSync(password, salt);
+
+      await usuario.save();
+
+      res.status(200).json({
+        firstName,
+        lastName,
+        email,
+        msg: "Resgistrado corectamente",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(404).json({
+        msg: "Fallo la Validacion del usuario",
       });
     }
-
-    // Encriptar password
-    const salt = bcrypt.genSaltSync();
-    usuario.password = bcrypt.hashSync(password, salt);
-
-    await usuario.save();
-
-    res.status(200).json({
-      msg: "Resgistrado corectamente",
-    });
   }
 
   async listarTodos(req, res) {
@@ -45,32 +57,29 @@ export class UserController {
   async Editar(req, res) {
     try {
       const { id } = req.params;
-      const { firstName, lastName, password,email} = req.body;
+      const { firstName, lastName, password, email } = req.body;
       const usuario = await User.findByPk(id);
 
       if (!usuario) {
         return res.status(404).json({
           msg: "Usuario no se han encontrado",
-          
         });
       }
       const salt = bcrypt.genSaltSync();
       usuario.password = bcrypt.hashSync(password, salt);
 
-
       usuario.firstName = firstName;
       usuario.lastName = lastName;
-      usuario.email = email
-      
+      usuario.email = email;
 
       await usuario.save();
       res.status(200).json({
         msg: "Editado correctamente",
-        usuario:{
+        usuario: {
           firstName,
           lastName,
-          ema
-        }
+          ema,
+        },
       });
     } catch (error) {
       console.log(error);

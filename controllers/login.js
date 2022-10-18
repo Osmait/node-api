@@ -23,10 +23,11 @@ export class Login {
       });
     }
 
+    
     // Generar JWT
     const token = await generarJWT(user.id)
-
     
+
     res.status(200).json({
         user,
         token
